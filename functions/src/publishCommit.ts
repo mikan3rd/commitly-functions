@@ -1,5 +1,7 @@
 import { PubSub } from "@google-cloud/pubsub";
 
+import { AddComitTopic } from "./addCommit";
+
 export type WebhookPushEventType = {
   repository: {
     full_name: string;
@@ -13,7 +15,7 @@ export type WebhookPushEventType = {
   commits: { id: string; distinct: boolean; author: { username: string } }[];
 };
 
-export const saveCommit = async (body: WebhookPushEventType) => {
+export const publishCommit = async (body: WebhookPushEventType) => {
   const {
     repository: { name, ownner },
     commits,
@@ -22,6 +24,6 @@ export const saveCommit = async (body: WebhookPushEventType) => {
   for (const commit of commits) {
     const data = JSON.stringify({ repositoryName: name, repositoryOwner: ownner, commitId: commit.id });
     const dataBuffer = Buffer.from(data);
-    await pubSub.topic("addCommit").publish(dataBuffer);
+    await pubSub.topic(AddComitTopic).publish(dataBuffer);
   }
 };

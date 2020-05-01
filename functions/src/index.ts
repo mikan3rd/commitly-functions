@@ -3,7 +3,8 @@ import * as admin from "firebase-admin";
 
 admin.initializeApp();
 
-import { saveCommit, WebhookPushEventType } from "./saveCommit";
+import { publishCommit, WebhookPushEventType } from "./publishCommit";
+import { addCommit, AddCommitJsonType, AddComitTopic } from "./addCommit";
 
 export const githubWebhook = functions.region("asia-northeast1").https.onRequest(async (request, response) => {
   const { method, headers, body } = request;
@@ -17,14 +18,14 @@ export const githubWebhook = functions.region("asia-northeast1").https.onRequest
     return response.status(400).send(`EventType Not Matched: ${eventType}`);
   }
 
-  await saveCommit(body as WebhookPushEventType);
+  await publishCommit(body as WebhookPushEventType);
 
   return response.send("SUCCESS: saveWebhookCommit");
 });
 
-export const addCommit = functions
+export const addCommitPubSub = functions
   .region("asia-northeast1")
-  .pubsub.topic("addCommit")
+  .pubsub.topic(AddComitTopic)
   .onPublish(async (message) => {
-    console.log(message.json);
+    addCommit(message.json as AddCommitJsonType);
   });
