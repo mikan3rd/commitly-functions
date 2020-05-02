@@ -18,14 +18,14 @@ export const githubWebhook = functions.region("asia-northeast1").https.onRequest
     return response.status(400).send(`EventType Not Matched: ${eventType}`);
   }
 
-  await publishCommit(body as WebhookPushEventType);
+  const result = await publishCommit(body as WebhookPushEventType);
 
-  return response.send("SUCCESS: saveWebhookCommit");
+  return response.send(result);
 });
 
 export const addCommitPubSub = functions
   .region("asia-northeast1")
   .pubsub.topic(AddComitTopic)
   .onPublish(async (message) => {
-    await addCommit(message.json as AddCommitJsonType);
+    return await addCommit(message.json as AddCommitJsonType);
   });

@@ -23,11 +23,18 @@ export const publishCommit = async (body: WebhookPushEventType) => {
     },
     commits,
   } = body;
+
+  const publishList: AddCommitJsonType[] = [];
   const pubSub = new PubSub();
   for (const commit of commits) {
-    const data: AddCommitJsonType = { repositoryName: name, repositoryOwner, commitId: commit.id };
+    if (!commit.distinct) {
+      continue;
+    }
+    const data: AddCommitJsonType = { repositoryOwner, repositoryName: name, commitId: commit.id };
     const dataJson = JSON.stringify(data);
     const dataBuffer = Buffer.from(dataJson);
     await pubSub.topic(AddComitTopic).publish(dataBuffer);
+    publishList.push(data);
   }
+  return publishList;
 };

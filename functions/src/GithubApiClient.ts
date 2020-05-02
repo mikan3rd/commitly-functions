@@ -12,6 +12,20 @@ const APP_ID = GITHUB_ENV.app_id;
 const privateKeyFilePath = "github_app.pem";
 const BaseUrl = "https://api.github.com";
 
+type CommitResponseType = {
+  sha: string;
+  commit: { author: { date: string }; message: string };
+  author: { id: number; login: string };
+  stats: { additions: number; deletions: number; total: number };
+  files: {
+    filename: string;
+    additions: number;
+    deletions: number;
+    changes: number;
+    patch: string;
+  }[];
+};
+
 export class GithubApiClient {
   appToken?: string;
   repositoryInstallationToken?: string;
@@ -45,7 +59,7 @@ export class GithubApiClient {
 
   async getCommit(owner: string, repo: string, commitId: string) {
     const url = `${BaseUrl}/repos/${owner}/${repo}/commits/${commitId}`;
-    return await axios.get(url, { headers: this.installationHeader });
+    return await axios.get<CommitResponseType>(url, { headers: this.installationHeader });
   }
 
   private get appHeader() {
