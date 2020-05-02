@@ -4,6 +4,7 @@ import { AddComitTopic, AddCommitJsonType } from "./addCommit";
 
 export type WebhookPushEventType = {
   repository: {
+    id: number;
     full_name: string;
     name: string;
     private: boolean;
@@ -18,7 +19,8 @@ export type WebhookPushEventType = {
 export const publishCommit = async (body: WebhookPushEventType) => {
   const {
     repository: {
-      name,
+      id: repositoryId,
+      name: repositoryName,
       owner: { name: repositoryOwner },
     },
     commits,
@@ -30,7 +32,12 @@ export const publishCommit = async (body: WebhookPushEventType) => {
     if (!commit.distinct) {
       continue;
     }
-    const data: AddCommitJsonType = { repositoryOwner, repositoryName: name, commitId: commit.id };
+    const data: AddCommitJsonType = {
+      repositoryId: String(repositoryId),
+      repositoryOwner,
+      repositoryName,
+      commitId: commit.id,
+    };
     const dataJson = JSON.stringify(data);
     const dataBuffer = Buffer.from(dataJson);
     await pubSub.topic(AddComitTopic).publish(dataBuffer);

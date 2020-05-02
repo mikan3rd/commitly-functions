@@ -1,11 +1,30 @@
+import * as admin from "firebase-admin";
+
 import { GithubApiClient } from "./GithubApiClient";
 
 export const AddComitTopic = "addCommit";
 
-export type AddCommitJsonType = { repositoryOwner: string; repositoryName: string; commitId: string };
+const collection = admin.firestore().collection("commits");
+const { FieldValue } = admin.firestore;
+
+export type AddCommitJsonType = {
+  repositoryId: string;
+  repositoryOwner: string;
+  repositoryName: string;
+  commitId: string;
+};
+
+export type CommitDocType = {
+  repositoryId: string;
+  commitId: string;
+  userId: string;
+  extentions: { [k: string]: number };
+  commitTimestamp: Date;
+  updatedAt: admin.firestore.FieldValue;
+};
 
 export const addCommit = async (json: AddCommitJsonType) => {
-  const { repositoryOwner, repositoryName, commitId } = json;
+  const { repositoryId, repositoryName, repositoryOwner, commitId } = json;
 
   const client = new GithubApiClient();
   await client.setAppToken();
@@ -38,16 +57,15 @@ export const addCommit = async (json: AddCommitJsonType) => {
     extentionDict[key] += changes;
   }
 
-  const aggrigateData = {
-    repository_owner: repositoryOwner,
-    repository_name: repositoryName,
-    commit_id: commitId,
-    user_id: author.id,
+  const aggrigateData: CommitDocType = {
+    repositoryId,
+    commitId,
+    userId: String(author.id),
     extentions: extentionDict,
-    date,
-    testDate: Date.parse(date).toString(),
+    commitTimestamp: new Date(date),
+    updatedAt: FieldValue.serverTimestamp(),
   };
-  console.log("aggrigateData:", JSON.stringify(aggrigateData));
+  await collection.doc(commitId).set(aggrigateData, { merge: true });
 
   return aggrigateData;
 };
