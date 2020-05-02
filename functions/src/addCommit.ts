@@ -2,9 +2,10 @@ import * as admin from "firebase-admin";
 
 import { GithubApiClient } from "./GithubApiClient";
 
-export const AddComitTopic = "addCommit";
+export const AddComitTopic = "addCommit" as const;
 
-const collection = admin.firestore().collection("commits");
+export const commitCollection = "commits" as const;
+const collection = admin.firestore().collection(commitCollection);
 const { FieldValue } = admin.firestore;
 
 export type AddCommitJsonType = {
@@ -19,6 +20,7 @@ export type CommitDocType = {
   commitId: string;
   userId: string;
   extentions: { [k: string]: number };
+  totalCommits: number;
   commitTimestamp: Date;
   updatedAt: admin.firestore.FieldValue;
 };
@@ -37,6 +39,7 @@ export const addCommit = async (json: AddCommitJsonType) => {
       commit: {
         author: { date },
       },
+      stats: { total: totalCommits },
     },
   } = await client.getCommit(repositoryOwner, repositoryName, commitId);
 
@@ -62,6 +65,7 @@ export const addCommit = async (json: AddCommitJsonType) => {
     commitId,
     userId: String(author.id),
     extentions: extentionDict,
+    totalCommits,
     commitTimestamp: new Date(date),
     updatedAt: FieldValue.serverTimestamp(),
   };
