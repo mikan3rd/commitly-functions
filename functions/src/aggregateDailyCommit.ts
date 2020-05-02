@@ -4,7 +4,7 @@ import * as dayjs from "dayjs";
 import { CommitsCollection, CommitDocType } from "./addCommit";
 
 export const AggregateDailyCommitTopic = "aggregateDailyCommitTopic" as const;
-export const dailyCommitsCollection = "dailyCommits" as const;
+export const DailyCommitsCollection = "dailyCommits" as const;
 
 export type AggregateDailyCommitJsonType = { userId: string };
 
@@ -18,7 +18,7 @@ export type DailyCommitDocType = {
 
 const { FieldValue } = admin.firestore;
 const commitsCollection = admin.firestore().collection(CommitsCollection);
-const dailyCommitCollection = admin.firestore().collection(dailyCommitsCollection);
+const dailyCommitsCollection = admin.firestore().collection(DailyCommitsCollection);
 
 export const aggregateDailyCommit = async (json: AggregateDailyCommitJsonType) => {
   const { userId } = json;
@@ -56,7 +56,7 @@ export const aggregateDailyCommit = async (json: AggregateDailyCommitJsonType) =
     date: today.toDate(),
     updatedAt: FieldValue.serverTimestamp(),
   };
-  await dailyCommitCollection.doc().set(aggrigateData, { merge: true });
+  await dailyCommitsCollection.doc().set(aggrigateData, { merge: true });
 
   return aggrigateData;
 };
