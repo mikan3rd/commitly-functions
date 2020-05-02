@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import * as dayjs from "dayjs";
 
-import { commitCollection, CommitDocType } from "./addCommit";
+import { CommitsCollection, CommitDocType } from "./addCommit";
 
 export const AggregateDailyCommitTopic = "aggregateDailyCommitTopic" as const;
 export const dailyCommitsCollection = "dailyCommits" as const;
@@ -17,22 +17,24 @@ export type DailyCommitDocType = {
 };
 
 const { FieldValue } = admin.firestore;
-const collection = admin.firestore().collection(commitCollection);
+const commitsCollection = admin.firestore().collection(CommitsCollection);
 const dailyCommitCollection = admin.firestore().collection(dailyCommitsCollection);
 
 export const aggregateDailyCommit = async (json: AggregateDailyCommitJsonType) => {
   const { userId } = json;
 
-  const today = dayjs().startOf("date");
-  const startTime = today.subtract(1, "date").toDate();
-  const endTime = today.toDate();
-  console.log("startTime:", startTime.toString());
-  console.log("endTime:", endTime.toString());
-  const commitDocs = await collection
+  const today = dayjs().add(9, "hour").startOf("day");
+  const startTime = today.subtract(1, "day");
+  const commitDocs = await commitsCollection
     .where("userId", "==", userId)
-    .where("commitTimestamp", ">=", startTime)
-    .where("commitTimestamp", "<", endTime)
+    .where("commitTimestamp", ">=", startTime.toDate())
+    .where("commitTimestamp", "<", today.toDate())
     .get();
+
+  if (commitDocs.empty) {
+    console.log(`NotFound, userId: ${userId}`);
+    return null;
+  }
 
   let totalCommits = 0;
   const extentionDict: { [p: string]: number } = {};

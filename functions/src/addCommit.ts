@@ -4,8 +4,8 @@ import { GithubApiClient } from "./GithubApiClient";
 
 export const AddComitTopic = "addCommit" as const;
 
-export const commitCollection = "commits" as const;
-const collection = admin.firestore().collection(commitCollection);
+export const CommitsCollection = "commits" as const;
+const collection = admin.firestore().collection(CommitsCollection);
 const { FieldValue } = admin.firestore;
 
 export type AddCommitJsonType = {
