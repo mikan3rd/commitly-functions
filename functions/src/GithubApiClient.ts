@@ -1,31 +1,54 @@
+import * as fs from "fs";
+import * as jwt from "jsonwebtoken";
+import * as admin from "firebase-admin";
+import * as path from "path";
+import * as os from "os";
+import * as functions from "firebase-functions";
 import axios from "axios";
 
+const GITHUB_ENV = functions.config().github;
+
+const APP_ID = GITHUB_ENV.app_id;
+const privateKeyFilePath = "github_app.pem";
 const BaseUrl = "https://api.github.com";
 
 export class GithubApiClient {
   appToken?: string;
   repositoryInstallationToken?: string;
 
+  async setAppToken() {
+    const bucket = admin.storage().bucket();
+    const tempFilePath = path.join(os.tmpdir(), privateKeyFilePath);
+    await bucket.file(`credentials/${privateKeyFilePath}`).download({ destination: tempFilePath });
+
+    const iat = Math.floor(Date.now() / 1000);
+    const exp = iat + 60 * 10;
+    const token = { iat, exp, iss: APP_ID };
+    const privateKey = fs.readFileSync(tempFilePath);
+    const appToken = jwt.sign(token, privateKey, { algorithm: "RS256" });
+
+    this.appToken = appToken;
+  }
+
   async setRepositoryInstallationToken(owner: string, repo: string) {
-    const headers = this.getAppHeader();
     const url = `${BaseUrl}/repos/${owner}/${repo}/installation`;
     const {
       data: { access_tokens_url },
-    } = await axios.get(url, { headers });
+    } = await axios.get(url, { headers: this.appHeader });
 
     const {
       data: { token },
-    } = await axios.post(access_tokens_url, { headers });
+    } = await axios.post(access_tokens_url, null, { headers: this.appHeader });
 
     this.repositoryInstallationToken = token;
   }
 
   async getCommit(owner: string, repo: string, commitId: string) {
     const url = `${BaseUrl}/repos/${owner}/${repo}/commits/${commitId}`;
-    return await axios.get(url, { headers: this.getInstallationHeader() });
+    return await axios.get(url, { headers: this.installationHeader });
   }
 
-  private getAppHeader() {
+  private get appHeader() {
     if (!this.appToken) {
       throw Error("appToken required");
     }
@@ -35,7 +58,7 @@ export class GithubApiClient {
     };
   }
 
-  private getInstallationHeader() {
+  private get installationHeader() {
     if (!this.repositoryInstallationToken) {
       throw Error("repositoryInstallationToken required");
     }

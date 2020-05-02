@@ -27,5 +27,5 @@ export const addCommitPubSub = functions
   .region("asia-northeast1")
   .pubsub.topic(AddComitTopic)
   .onPublish(async (message) => {
-    addCommit(message.json as AddCommitJsonType);
+    await addCommit(message.json as AddCommitJsonType);
   });

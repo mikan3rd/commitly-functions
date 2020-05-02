@@ -7,7 +7,7 @@ export type WebhookPushEventType = {
     full_name: string;
     name: string;
     private: boolean;
-    ownner: { name: string };
+    owner: { name: string };
   };
   sender: {
     id: number;
@@ -19,7 +19,7 @@ export const publishCommit = async (body: WebhookPushEventType) => {
   const {
     repository: {
       name,
-      ownner: { name: repositoryOwner },
+      owner: { name: repositoryOwner },
     },
     commits,
   } = body;
