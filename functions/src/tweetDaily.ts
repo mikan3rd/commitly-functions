@@ -63,7 +63,9 @@ export const tweetDaily = async (json: UserDataType) => {
 
   const contetnList = [
     `@${twitterUsername} は${totalCommits}行のコードを書きました`,
+    "",
     ...mainList,
+    "",
     ...subList,
     "",
     `[GitHub] https://github.com/${githubUsername}`,
