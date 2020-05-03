@@ -1,10 +1,7 @@
-import * as admin from "firebase-admin";
 import { PubSub } from "@google-cloud/pubsub";
 
 import { AggregateDailyCommitTopic, AggregateDailyCommitJsonType } from "./aggregateDailyCommit";
-
-export const userCollection = "users" as const;
-const collection = admin.firestore().collection(userCollection);
+import { userCollection } from "./firestoreCollection";
 
 type UserDataType = {
   github: GithubDataType;
@@ -21,7 +18,7 @@ type GithubDataType = {
 export const publishDailyCommitAggregation = async () => {
   const users: UserDataType[] = [];
 
-  const userDocs = await collection.get();
+  const userDocs = await userCollection.get();
   userDocs.forEach((doc) => {
     const user = doc.data() as UserDataType;
     users.push(user);

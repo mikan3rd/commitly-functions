@@ -1,11 +1,10 @@
 import * as admin from "firebase-admin";
 
 import { GithubApiClient } from "./GithubApiClient";
+import { userCollection, commitCollection } from "./firestoreCollection";
 
 export const AddComitTopic = "addCommit" as const;
 
-export const CommitsCollection = "commits" as const;
-const collection = admin.firestore().collection(CommitsCollection);
 const { FieldValue } = admin.firestore;
 
 export type AddCommitJsonType = {
@@ -35,13 +34,19 @@ export const addCommit = async (json: AddCommitJsonType) => {
   const {
     data: {
       files,
-      author,
+      author: { id: userId },
       commit: {
         author: { date },
       },
       stats: { total: totalCommits },
     },
   } = await client.getCommit(repositoryOwner, repositoryName, commitId);
+
+  const userDocs = await userCollection.where("github.userId", "==", String(userId)).limit(1).get();
+  if (userDocs.empty) {
+    console.log(`NotFound, userId: ${userId}`);
+    return null;
+  }
 
   const extentionDict: { [p: string]: number } = {};
   for (const file of files) {
@@ -63,13 +68,13 @@ export const addCommit = async (json: AddCommitJsonType) => {
   const aggrigateData: CommitDocType = {
     repositoryId,
     commitId,
-    userId: String(author.id),
+    userId: String(userId),
     extentions: extentionDict,
     totalCommits,
     commitTimestamp: new Date(date),
     updatedAt: FieldValue.serverTimestamp(),
   };
-  await collection.doc(commitId).set(aggrigateData, { merge: true });
+  await commitCollection.doc(commitId).set(aggrigateData, { merge: true });
 
   return aggrigateData;
 };
