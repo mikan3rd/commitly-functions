@@ -1,13 +1,18 @@
 import { PubSub } from "@google-cloud/pubsub";
+import * as dayjs from "dayjs";
 
-import { AggregateDailyCommitTopic, AggregateDailyCommitJsonType } from "./aggregateDailyCommit";
+import { TweetDailyTopic } from "./tweetDaily";
 import { userCollection } from "./firestoreCollection";
 import { UserDataType } from "./publishDailyCommitAggregation";
 
 export const publishDailyTweet = async () => {
   const users: UserDataType[] = [];
 
-  const userDocs = await userCollection.where("twitter.userId", ">", "").get();
+  const currentHour = dayjs().add(9, "hour").hour();
+  const userDocs = await userCollection
+    .where("setting.tweetTime", "==", currentHour)
+    .where("twitter.userId", ">", "")
+    .get();
   userDocs.forEach((doc) => {
     const user = doc.data() as UserDataType;
     users.push(user);
@@ -15,9 +20,8 @@ export const publishDailyTweet = async () => {
 
   const pubSub = new PubSub();
   for (const user of users) {
-    const data = { user };
-    const dataJson = JSON.stringify(data);
+    const dataJson = JSON.stringify(user);
     const dataBuffer = Buffer.from(dataJson);
-    await pubSub.topic(AggregateDailyCommitTopic).publish(dataBuffer);
+    await pubSub.topic(TweetDailyTopic).publish(dataBuffer);
   }
 };

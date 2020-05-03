@@ -51,7 +51,7 @@ export const aggregateDailyCommit = async (json: AggregateDailyCommitJsonType) =
     userId,
     extentions: extentionDict,
     totalCommits,
-    date: today.toDate(),
+    date: today.subtract(1, "day").toDate(),
     updatedAt: FieldValue.serverTimestamp(),
   };
   await dailyCommitCollection.doc().set(aggrigateData, { merge: true });
