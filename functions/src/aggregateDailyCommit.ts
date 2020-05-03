@@ -21,11 +21,12 @@ export const aggregateDailyCommit = async (json: AggregateDailyCommitJsonType) =
   const { userId } = json;
 
   const today = dayjs().add(9, "hour").startOf("day");
-  const startTime = today.subtract(1, "day");
+  const endTime = today.subtract(9, "hour");
+  const startTime = endTime.subtract(1, "day");
   const commitDocs = await commitCollection
     .where("userId", "==", userId)
     .where("commitTimestamp", ">=", startTime.toDate())
-    .where("commitTimestamp", "<", today.toDate())
+    .where("commitTimestamp", "<", endTime.toDate())
     .get();
 
   if (commitDocs.empty) {
