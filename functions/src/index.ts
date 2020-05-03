@@ -5,8 +5,10 @@ admin.initializeApp();
 
 import { publishCommit, WebhookPushEventType } from "./publishCommit";
 import { addCommit, AddCommitJsonType, AddComitTopic } from "./addCommit";
-import { publishDailyCommitAggregation } from "./publishDailyCommitAggregation";
+import { publishDailyCommitAggregation, UserDataType } from "./publishDailyCommitAggregation";
 import { AggregateDailyCommitTopic, aggregateDailyCommit, AggregateDailyCommitJsonType } from "./aggregateDailyCommit";
+import { publishDailyTweet } from "./publishDailyTweet";
+import { tweetDaily, TweetDailyTopic } from "./tweetDaily";
 
 export const githubWebhook = functions.region("asia-northeast1").https.onRequest(async (request, response) => {
   const { method, headers, body } = request;
@@ -44,4 +46,19 @@ export const aggregateDailyCommitPubSub = functions
   .pubsub.topic(AggregateDailyCommitTopic)
   .onPublish(async (message) => {
     await aggregateDailyCommit(message.json as AggregateDailyCommitJsonType);
+  });
+
+export const tweetDailyScheduler = functions
+  .region("asia-northeast1")
+  .pubsub.schedule("0 * * * *")
+  .timeZone("Asia/Tokyo")
+  .onRun(async (context) => {
+    await publishDailyTweet();
+  });
+
+export const tweetDailyPubSub = functions
+  .region("asia-northeast1")
+  .pubsub.topic(TweetDailyTopic)
+  .onPublish(async (message) => {
+    await tweetDaily(message.json as UserDataType);
   });
