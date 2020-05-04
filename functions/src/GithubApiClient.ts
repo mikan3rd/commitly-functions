@@ -14,8 +14,8 @@ const BaseUrl = "https://api.github.com";
 
 type CommitResponseType = {
   sha: string;
-  commit: { author: { date: string }; message: string };
-  author: { id: number; login: string };
+  commit: { committer: { date: string }; message: string };
+  committer: { id: number; login: string };
   stats: { additions: number; deletions: number; total: number };
   files: {
     filename: string;

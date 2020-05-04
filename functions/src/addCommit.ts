@@ -34,9 +34,9 @@ export const addCommit = async (json: AddCommitJsonType) => {
   const {
     data: {
       files,
-      author: { id: userId },
+      committer: { id: userId },
       commit: {
-        author: { date },
+        committer: { date },
       },
       stats: { total: totalCommits },
     },

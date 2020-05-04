@@ -13,7 +13,7 @@ export type WebhookPushEventType = {
   sender: {
     id: number;
   };
-  commits: { id: string; distinct: boolean; author: { username: string } }[];
+  commits: { id: string; distinct: boolean; committer: { username: string } }[];
 };
 
 export const publishCommit = async (body: WebhookPushEventType) => {
