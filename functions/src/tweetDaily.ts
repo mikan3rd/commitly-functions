@@ -62,7 +62,8 @@ export const tweetDaily = async (json: UserDataType) => {
     .map(({ key, value }) => `${key}: ${value}`);
 
   const contetnList = [
-    `@${twitterUsername} は${totalCommits}行のコードを書きました`,
+    `${date.format("YYYY年M月D日(ddd)")}`,
+    `@${twitterUsername} は${totalCommits}行のコードを書きました!`,
     "",
     ...mainList,
     "",
