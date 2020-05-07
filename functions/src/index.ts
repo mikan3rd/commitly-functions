@@ -13,6 +13,7 @@ import { publishDailyCommitAggregation, UserDataType } from "./publishDailyCommi
 import { AggregateDailyCommitTopic, aggregateDailyCommit, AggregateDailyCommitJsonType } from "./aggregateDailyCommit";
 import { publishDailyTweet } from "./publishDailyTweet";
 import { tweetDaily, TweetDailyTopic } from "./tweetDaily";
+import { retweetBot } from "./retweetBot";
 
 export const githubWebhook = functions.region("asia-northeast1").https.onRequest(async (request, response) => {
   const { method, headers, body } = request;
@@ -65,4 +66,12 @@ export const tweetDailyPubSub = functions
   .pubsub.topic(TweetDailyTopic)
   .onPublish(async (message) => {
     await tweetDaily(message.json as UserDataType);
+  });
+
+export const retweetBotScheduler = functions
+  .region("asia-northeast1")
+  .pubsub.schedule("0 21 * * *")
+  .timeZone("Asia/Tokyo")
+  .onRun(async (context) => {
+    await retweetBot();
   });

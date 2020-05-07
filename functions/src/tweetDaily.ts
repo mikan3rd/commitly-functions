@@ -76,7 +76,6 @@ export const tweetDaily = async (json: UserDataType) => {
     "#commitly",
   ];
   const status = contetnList.join("\n");
-  console.log(JSON.stringify(status));
 
   const client = TwitterClient.get(accessToken, secret);
   await client.postTweet(status);

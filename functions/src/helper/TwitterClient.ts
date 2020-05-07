@@ -3,6 +3,27 @@ import * as functions from "firebase-functions";
 
 const TWITTER_ENV = functions.config().twitter;
 
+export type TweetObjectType = {
+  id_str: string;
+  retweeted: boolean;
+  retweet_count: number;
+  favorited: boolean;
+  favorite_count: number;
+  user: TweetUserType;
+};
+
+export type TweetUserType = {
+  id_str: string;
+  screen_name: string;
+  followers_count: number;
+  friends_count: number;
+  follow_request_sent: boolean;
+  following: boolean;
+  blocked_by: boolean;
+  followed_by: boolean;
+  lang: string;
+};
+
 export class TwitterClient {
   client: Twitter;
 
@@ -35,5 +56,17 @@ export class TwitterClient {
       status,
       media_ids: mediaIds.join(","),
     });
+  }
+
+  async searchTweet(q: string, count = 100) {
+    const response = await this.client.get("search/tweets", {
+      q,
+      count,
+    });
+    return response as { statuses: TweetObjectType[] };
+  }
+
+  async postRetweet(tweetId: string) {
+    return await this.client.post(`statuses/retweet/${tweetId}`, {});
   }
 }
