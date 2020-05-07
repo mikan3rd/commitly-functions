@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import * as dayjs from "dayjs";
 
 import { CommitDocType } from "./addCommit";
-import { commitCollection, dailyCommitCollection } from "./firestoreCollection";
+import { commitCollection, dailyCommitCollection } from "./helper/firestoreCollection";
 
 export const AggregateDailyCommitTopic = "aggregateDailyCommitTopic" as const;
 const { FieldValue } = admin.firestore;

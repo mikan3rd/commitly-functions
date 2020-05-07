@@ -2,7 +2,7 @@ import { PubSub } from "@google-cloud/pubsub";
 import * as dayjs from "dayjs";
 
 import { TweetDailyTopic } from "./tweetDaily";
-import { userCollection } from "./firestoreCollection";
+import { userCollection } from "./helper/firestoreCollection";
 import { UserDataType } from "./publishDailyCommitAggregation";
 
 export const publishDailyTweet = async () => {

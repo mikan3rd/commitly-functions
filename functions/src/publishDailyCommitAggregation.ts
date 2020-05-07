@@ -1,7 +1,7 @@
 import { PubSub } from "@google-cloud/pubsub";
 
 import { AggregateDailyCommitTopic, AggregateDailyCommitJsonType } from "./aggregateDailyCommit";
-import { userCollection } from "./firestoreCollection";
+import { userCollection } from "./helper/firestoreCollection";
 
 export type UserDataType = {
   github: GithubDataType;

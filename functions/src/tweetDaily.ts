@@ -1,8 +1,8 @@
 import * as dayjs from "dayjs";
 
 import { UserDataType } from "./publishDailyCommitAggregation";
-import { TwitterClient } from "./TwitterClient";
-import { dailyCommitCollection } from "./firestoreCollection";
+import { TwitterClient } from "./helper/TwitterClient";
+import { dailyCommitCollection } from "./helper/firestoreCollection";
 import { DailyCommitDocType } from "./aggregateDailyCommit";
 
 export const TweetDailyTopic = "tweetDailyTopic" as const;
@@ -60,6 +60,8 @@ export const tweetDaily = async (json: UserDataType) => {
     .map(([key, value]) => ({ key, value }))
     .sort((a, b) => (a.value > b.value ? -1 : 1))
     .map(({ key, value }) => `${key}: ${value}`);
+
+  // TODO: ハッシュタグをつける
 
   const contetnList = [
     `${date.format("YYYY年M月D日(ddd)")}`,

@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 
-import { GithubApiClient } from "./GithubApiClient";
-import { userCollection, commitCollection } from "./firestoreCollection";
+import { GithubApiClient } from "./helper/GithubApiClient";
+import { userCollection, commitCollection } from "./helper/firestoreCollection";
 
 export const AddComitTopic = "addCommit" as const;
 
