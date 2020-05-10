@@ -65,15 +65,14 @@ export const tweetDaily = async (json: UserDataType) => {
 
   const contetnList = [
     `${date.format("YYYY年M月D日(ddd)")}`,
-    `@${twitterUsername} は${totalCommits}行のコードを書きました!`,
+    `@${twitterUsername} は${totalCommits}行のコードを書きました！`,
     "",
     ...mainList,
     "",
     ...subList,
     "",
-    `[GitHub] https://github.com/${githubUsername}`,
-    "",
     "#commitly",
+    "https://commitly-5cdad.firebaseapp.com",
   ];
   const status = contetnList.join("\n");
 
