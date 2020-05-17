@@ -14,6 +14,7 @@ import { AggregateDailyCommitTopic, aggregateDailyCommit, AggregateDailyCommitJs
 import { publishDailyTweet } from "./publishDailyTweet";
 import { tweetDaily, TweetDailyTopic } from "./tweetDaily";
 import { retweetBot } from "./retweetBot";
+import { getProfileData } from "./getProfileData";
 
 export const githubWebhook = functions.region("asia-northeast1").https.onRequest(async (request, response) => {
   const { method, headers, body } = request;
@@ -75,3 +76,8 @@ export const retweetBotScheduler = functions
   .onRun(async (context) => {
     await retweetBot();
   });
+
+export const getProfileDataHttps = functions.region("asia-northeast1").https.onCall(async (data, context) => {
+  const { username } = data;
+  return await getProfileData(username);
+});

@@ -2,20 +2,12 @@ import * as admin from "firebase-admin";
 import * as dayjs from "dayjs";
 
 import { CommitDocType } from "./addCommit";
-import { commitCollection, dailyCommitCollection } from "./helper/firestoreCollection";
+import { commitCollection, dailyCommitCollection, DailyCommitDocType } from "./helper/firestoreCollection";
 
 export const AggregateDailyCommitTopic = "aggregateDailyCommitTopic" as const;
 const { FieldValue } = admin.firestore;
 
 export type AggregateDailyCommitJsonType = { userId: string };
-
-export type DailyCommitDocType = {
-  userId: string;
-  extentions: { [k: string]: number };
-  totalCommits: number;
-  date: Date;
-  updatedAt: admin.firestore.FieldValue;
-};
 
 export const aggregateDailyCommit = async (json: AggregateDailyCommitJsonType) => {
   const { userId } = json;

@@ -2,8 +2,7 @@ import * as dayjs from "dayjs";
 
 import { UserDataType } from "./publishDailyCommitAggregation";
 import { TwitterClient } from "./helper/TwitterClient";
-import { dailyCommitCollection } from "./helper/firestoreCollection";
-import { DailyCommitDocType } from "./aggregateDailyCommit";
+import { dailyCommitCollection, DailyCommitDocType } from "./helper/firestoreCollection";
 
 export const TweetDailyTopic = "tweetDailyTopic" as const;
 
@@ -71,8 +70,10 @@ export const tweetDaily = async (json: UserDataType) => {
     "",
     ...subList,
     "",
+    `[GitHub] https://github.com/${githubUsername}`,
+    "",
     "#commitly",
-    "https://commitly-5cdad.firebaseapp.com",
+    // "https://commitly-5cdad.firebaseapp.com",
   ];
   const status = contetnList.join("\n");
 
