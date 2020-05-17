@@ -1,3 +1,4 @@
+import * as admin from "firebase-admin";
 import { userCollection, dailyCommitCollection, DailyCommitDocType } from "./helper/firestoreCollection";
 
 export const getProfileData = async (username: string) => {
@@ -24,5 +25,12 @@ export const getProfileData = async (username: string) => {
     commits.push(commtiData);
   });
 
-  return { github: { username: userData.github.username }, twitter: { username: userData.twitter.username }, commits };
+  return {
+    github: { username: userData.github.username },
+    twitter: { username: userData.twitter.username },
+    commits: commits.map((commit) => {
+      const date = (commit.date as unknown) as admin.firestore.Timestamp;
+      return { ...commit, date: Math.floor(date.toDate().getTime() / 1000) };
+    }),
+  };
 };
