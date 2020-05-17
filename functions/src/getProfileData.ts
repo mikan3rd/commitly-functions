@@ -24,5 +24,5 @@ export const getProfileData = async (username: string) => {
     commits.push(commtiData);
   });
 
-  return { user: userData, commits };
+  return { github: { username: userData.github.username }, twitter: { username: userData.twitter.username }, commits };
 };
