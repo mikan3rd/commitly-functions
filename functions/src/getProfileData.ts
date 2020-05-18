@@ -15,7 +15,7 @@ export const getProfileData = async (username: string) => {
 
   const commitDocs = await dailyCommitCollection
     .where("userId", "==", userData.github.userId)
-    .orderBy("date")
+    .orderBy("date", "desc")
     .limit(10)
     .get();
 
