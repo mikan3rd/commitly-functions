@@ -70,10 +70,8 @@ export const tweetDaily = async (json: UserDataType) => {
     "",
     ...subList,
     "",
-    `[GitHub] https://github.com/${githubUsername}`,
-    "",
     "#commitly",
-    // "https://commitly-5cdad.firebaseapp.com",
+    `https://commitly-next-web.vercel.app/profile/${githubUsername}`,
   ];
   const status = contetnList.join("\n");
 
@@ -113,5 +111,5 @@ const extentionsDict = {
   md: "Markdown",
   yaml: "YAML",
   yml: "YAML",
-  others: "その他",
+  no_extension: "その他",
 };
